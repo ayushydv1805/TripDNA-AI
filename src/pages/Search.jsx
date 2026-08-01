@@ -239,9 +239,7 @@ localStorage.setItem(
   destination={to}
 />
 <RestaurantsCard restaurants={restaurants} />
-<SmartRecommendation
-   travelModes={travelModes}
-/>
+
 <AttractionsCard attractions={attractions} />
 <EmergencyServices
   title="Nearby Hospitals"
@@ -268,7 +266,7 @@ localStorage.setItem(
 />
 <BudgetCard budget={budget} />
 
-<TravelModes travelModes={travelModes} />
+
 <BookingCard
   from={from}
   to={to}
