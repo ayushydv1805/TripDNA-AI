@@ -1,156 +1,50 @@
 import { useEffect, useState } from "react";
-import { calculateBudget } from "../../../services/travel/budget";
-import { getCoordinates } from "../../../services/geospatial/geocoding";
-import {
-  getDestinationImage,
-  getDestinationImages,
-} from "../../../services/media/images";
-import { getNearbyPlaces } from "../../../services/geospatial/places";
-import { getRoute } from "../../../services/geospatial/routing";
-import { getTravelModes } from "../../../services/travel/travelModes";
-import { saveTrip } from "../../../services/storage/trips";
-import { getForecast, getWeather } from "../../../services/weather/weather";
-import { addRecentSearch } from "../utils/recentSearches";
+import { loadTripData } from "../services/loadTripData";
+
+const EMPTY_TRIP = {
+  fromLocation: null,
+  toLocation: null,
+  routeInfo: null,
+  weather: null,
+  forecast: [],
+  hotels: [],
+  restaurants: [],
+  attractions: [],
+  hospitals: [],
+  pharmacies: [],
+  atms: [],
+  petrolPumps: [],
+  budget: null,
+  travelModes: [],
+  destinationImage: "",
+  destinationImages: [],
+};
 
 export function useTripSearchData(from, to) {
-  const [data, setData] = useState({
-    fromLocation: null,
-    toLocation: null,
-    routeInfo: null,
-    weather: null,
-    forecast: [],
-    hotels: [],
-    restaurants: [],
-    attractions: [],
-    hospitals: [],
-    pharmacies: [],
-    atms: [],
-    petrolPumps: [],
-    budget: null,
-    travelModes: [],
-    destinationImage: "",
-    destinationImages: [],
-  });
-
+  const [trip, setTrip] = useState(EMPTY_TRIP);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadTripData() {
+    async function fetchTrip() {
       if (!from || !to) {
+        setTrip(EMPTY_TRIP);
         setError("Please provide both a starting point and a destination.");
-        setLoading(false);
         return;
       }
 
       setLoading(true);
       setError("");
-      setData({
-        fromLocation: null,
-        toLocation: null,
-        routeInfo: null,
-        weather: null,
-        forecast: [],
-        hotels: [],
-        restaurants: [],
-        attractions: [],
-        hospitals: [],
-        pharmacies: [],
-        atms: [],
-        petrolPumps: [],
-        budget: null,
-        travelModes: [],
-        destinationImage: "",
-        destinationImages: [],
-      });
+      setTrip(EMPTY_TRIP);
 
       try {
-        const [start, end] = await Promise.all([
-          getCoordinates(from),
-          getCoordinates(to),
-        ]);
-
-        if (cancelled) return;
-        if (!start || !end) {
-          throw new Error("Could not find one of the locations.");
-        }
-
-        const route = await getRoute(start, end);
-
-        if (cancelled) return;
-        if (!route) {
-          throw new Error("Could not calculate a route for these locations.");
-        }
-
-        const budgetData = calculateBudget(route.distance);
-        const modes = getTravelModes(route.distance);
-
-        setData((previous) => ({
-          ...previous,
-          fromLocation: start,
-          toLocation: end,
-          routeInfo: route,
-          budget: budgetData,
-          travelModes: modes,
-        }));
-
-        const [
-          weatherResult,
-          forecastResult,
-          hotelResult,
-          restaurantResult,
-          attractionResult,
-          hospitalResult,
-          pharmacyResult,
-          atmResult,
-          petrolResult,
-          heroImage,
-          galleryImages,
-        ] = await Promise.all([
-          getWeather(end.lat, end.lon),
-          getForecast(end.lat, end.lon),
-          getNearbyPlaces(end.lat, end.lon, "accommodation.hotel"),
-          getNearbyPlaces(end.lat, end.lon, "catering.restaurant"),
-          getNearbyPlaces(end.lat, end.lon, "tourism.attraction"),
-          getNearbyPlaces(end.lat, end.lon, "healthcare.hospital"),
-          getNearbyPlaces(end.lat, end.lon, "healthcare.pharmacy"),
-          getNearbyPlaces(end.lat, end.lon, "service.financial.atm"),
-          getNearbyPlaces(end.lat, end.lon, "service.vehicle.fuel"),
-          getDestinationImage(to),
-          getDestinationImages(to),
-        ]);
-
-        if (cancelled) return;
-
-        setData((previous) => ({
-          ...previous,
-          weather: weatherResult,
-          forecast: forecastResult,
-          hotels: hotelResult,
-          restaurants: restaurantResult,
-          attractions: attractionResult,
-          hospitals: hospitalResult,
-          pharmacies: pharmacyResult,
-          atms: atmResult,
-          petrolPumps: petrolResult,
-          destinationImage: heroImage || "",
-          destinationImages: galleryImages || [],
-        }));
-
-        saveTrip({
-          from,
-          to,
-          date: new Date().toLocaleString(),
-          distance: route.distance,
-          duration: route.duration,
-        });
-
-        addRecentSearch(from, to);
+        const result = await loadTripData(from, to);
+        if (!cancelled) setTrip(result);
       } catch (err) {
         if (!cancelled) {
-          console.error("Trip loading error:", err);
+          console.error("Trip search error:", err);
           setError(
             err instanceof Error
               ? err.message
@@ -162,12 +56,16 @@ export function useTripSearchData(from, to) {
       }
     }
 
-    loadTripData();
+    fetchTrip();
 
     return () => {
       cancelled = true;
     };
   }, [from, to]);
 
-  return { ...data, loading, error };
+  return {
+    ...trip,
+    loading,
+    error,
+  };
 }
