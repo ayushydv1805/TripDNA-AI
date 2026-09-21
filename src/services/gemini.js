@@ -1,34 +1,17 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
-const genAI = new GoogleGenerativeAI(API_KEY);
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash",
-});
-
 export async function generateTripPlan(from, to, days, budget, tripType) {
-  const prompt = `
-You are a professional travel planner.
+  const response = await fetch("/api/ai/trip-plan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ from, to, days, budget, tripType }),
+  });
 
-Create a ${days}-day ${tripType} trip itinerary.
+  const data = await response.json();
 
-From: ${from}
-Destination: ${to}
-Budget: ₹${budget}
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to generate itinerary.");
+  }
 
-Include:
-- Day-wise itinerary
-- Best attractions
-- Best restaurants
-- Budget tips
-- Packing list
-- Weather advice
-
-Return the answer in clean markdown.
-`;
-
-  const result = await model.generateContent(prompt);
-
-  return result.response.text();
+  return data.content;
 }
