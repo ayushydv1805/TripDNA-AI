@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
-import { getFavorites } from "../services/favorites";
-import { getTrips } from "../services/trips";
+import { getFavorites } from "../services/storage/favorites";
+import { getTrips } from "../services/storage/trips";
 
 function Profile() {
   const favorites = getFavorites();
