@@ -60,12 +60,6 @@ function SearchResults({ from, to, trip }) {
       <TravelModes travelModes={trip.travelModes} />
       <SmartRecommendation travelModes={trip.travelModes} />
 
-      <MapView
-        fromLocation={trip.fromLocation}
-        toLocation={trip.toLocation}
-        route={trip.routeInfo}
-      />
-
       <TripDetailsCard routeInfo={trip.routeInfo} />
       <WeatherCard weather={trip.weather} />
       <ForecastCard forecast={trip.forecast} />
@@ -90,6 +84,12 @@ function SearchResults({ from, to, trip }) {
         to={to}
         distance={trip.routeInfo.distance}
         duration={trip.routeInfo.duration}
+      />
+
+      <MapView
+        fromLocation={trip.fromLocation}
+        toLocation={trip.toLocation}
+        route={trip.routeInfo}
       />
     </>
   );
