@@ -1,130 +1,151 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { searchPlaces } from "../services/autocomplete";
 
 function SearchBar() {
   const navigate = useNavigate();
+  const requestId = useRef(0);
 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
-
   const [fromSuggestions, setFromSuggestions] = useState([]);
   const [toSuggestions, setToSuggestions] = useState([]);
+  const [searchingFrom, setSearchingFrom] = useState(false);
+  const [searchingTo, setSearchingTo] = useState(false);
 
-  async function handleFromChange(value) {
-    setFrom(value);
+  async function handleLocationChange(value, setValue, setSuggestions, setSearching) {
+    setValue(value);
+    const currentRequest = ++requestId.current;
 
-    if (value.length < 2) {
-      setFromSuggestions([]);
+    if (value.trim().length < 2) {
+      setSuggestions([]);
       return;
     }
 
-    try {
-      const places = await searchPlaces(value);
-      setFromSuggestions(places);
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  async function handleToChange(value) {
-    setTo(value);
-
-    if (value.length < 2) {
-      setToSuggestions([]);
-      return;
-    }
+    setSearching(true);
 
     try {
       const places = await searchPlaces(value);
-      setToSuggestions(places);
-    } catch (err) {
-      console.error(err);
+
+      if (currentRequest === requestId.current) {
+        setSuggestions(places);
+      }
+    } catch (error) {
+      console.error("Location suggestion error:", error);
+      if (currentRequest === requestId.current) {
+        setSuggestions([]);
+      }
+    } finally {
+      if (currentRequest === requestId.current) {
+        setSearching(false);
+      }
     }
   }
 
   function handleSearch() {
-    if (!from.trim() || !to.trim()) {
+    const start = from.trim();
+    const destination = to.trim();
+
+    if (!start || !destination) {
       alert("Please enter both locations.");
       return;
     }
 
     navigate(
-      `/search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+      "/search?from=" +
+        encodeURIComponent(start) +
+        "&to=" +
+        encodeURIComponent(destination)
     );
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 mt-12 max-w-5xl mx-auto px-6">
-
+    <div className="mx-auto mt-12 flex max-w-5xl flex-col gap-4 px-6 md:flex-row">
       <div className="relative flex-1">
-
         <input
           type="text"
           placeholder="📍 From"
           value={from}
-          onChange={(e) => handleFromChange(e.target.value)}
-          className="w-full p-4 rounded-xl bg-white/10 border border-white/20 outline-none"
+          onChange={(event) =>
+            handleLocationChange(
+              event.target.value,
+              setFrom,
+              setFromSuggestions,
+              setSearchingFrom
+            )
+          }
+          className="w-full rounded-xl border border-white/20 bg-white/10 p-4 outline-none transition focus:border-cyan-400/50"
         />
 
-        {fromSuggestions.length > 0 && (
-          <div className="absolute z-50 bg-slate-900 rounded-xl w-full mt-2 max-h-64 overflow-y-auto shadow-xl">
-
-            {fromSuggestions.map((place, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  setFrom(place.properties.formatted);
-                  setFromSuggestions([]);
-                }}
-                className="p-3 hover:bg-cyan-600 cursor-pointer border-b border-slate-700"
-              >
-                📍 {place.properties.formatted}
-              </div>
-            ))}
-
-          </div>
+        {searchingFrom && (
+          <p className="absolute right-3 top-4 text-xs text-slate-400">Searching...</p>
         )}
 
+        {fromSuggestions.length > 0 && (
+          <div className="absolute z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-xl bg-slate-900 shadow-xl">
+            {fromSuggestions.map((place, index) => (
+              <button
+                type="button"
+                key={place.properties?.place_id || place.properties?.osm_id || index}
+                onClick={() => {
+                  setFrom(place.properties?.formatted || "");
+                  setFromSuggestions([]);
+                }}
+                className="block w-full border-b border-slate-700 p-3 text-left transition hover:bg-cyan-600"
+              >
+                📍 {place.properties?.formatted || "Unknown location"}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
-            <div className="relative flex-1">
 
+      <div className="relative flex-1">
         <input
           type="text"
           placeholder="📍 To"
           value={to}
-          onChange={(e) => handleToChange(e.target.value)}
-          className="w-full p-4 rounded-xl bg-white/10 border border-white/20 outline-none"
+          onChange={(event) =>
+            handleLocationChange(
+              event.target.value,
+              setTo,
+              setToSuggestions,
+              setSearchingTo
+            )
+          }
+          className="w-full rounded-xl border border-white/20 bg-white/10 p-4 outline-none transition focus:border-cyan-400/50"
         />
 
-        {toSuggestions.length > 0 && (
-          <div className="absolute z-50 bg-slate-900 rounded-xl w-full mt-2 max-h-64 overflow-y-auto shadow-xl">
-
-            {toSuggestions.map((place, index) => (
-              <div
-                key={index}
-                onClick={() => {
-                  setTo(place.properties.formatted);
-                  setToSuggestions([]);
-                }}
-                className="p-3 hover:bg-cyan-600 cursor-pointer border-b border-slate-700"
-              >
-                📍 {place.properties.formatted}
-              </div>
-            ))}
-
-          </div>
+        {searchingTo && (
+          <p className="absolute right-3 top-4 text-xs text-slate-400">Searching...</p>
         )}
 
+        {toSuggestions.length > 0 && (
+          <div className="absolute z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-xl bg-slate-900 shadow-xl">
+            {toSuggestions.map((place, index) => (
+              <button
+                type="button"
+                key={place.properties?.place_id || place.properties?.osm_id || index}
+                onClick={() => {
+                  setTo(place.properties?.formatted || "");
+                  setToSuggestions([]);
+                }}
+                className="block w-full border-b border-slate-700 p-3 text-left transition hover:bg-cyan-600"
+              >
+                📍 {place.properties?.formatted || "Unknown location"}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <button
+        type="button"
         onClick={handleSearch}
-        className="bg-cyan-500 hover:bg-cyan-600 px-8 py-4 rounded-xl font-semibold"
+        className="rounded-xl bg-cyan-400 px-8 py-4 font-semibold text-slate-950 transition hover:bg-cyan-300 md:min-w-32"
       >
         🔍 Search
       </button>
-
     </div>
   );
 }
