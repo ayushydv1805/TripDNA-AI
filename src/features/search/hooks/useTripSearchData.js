@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { calculateBudget } from "../../../services/budget";
-import { getCoordinates } from "../../../services/geocoding";
+import { calculateBudget } from "../../../services/travel/budget";
+import { getCoordinates } from "../../../services/geospatial/geocoding";
 import {
   getDestinationImage,
   getDestinationImages,
-} from "../../../services/images";
-import { getNearbyPlaces } from "../../../services/places";
-import { getRoute } from "../../../services/routing";
-import { getTravelModes } from "../../../services/travelModes";
-import { saveTrip } from "../../../services/trips";
-import { getForecast, getWeather } from "../../../services/weather";
+} from "../../../services/media/images";
+import { getNearbyPlaces } from "../../../services/geospatial/places";
+import { getRoute } from "../../../services/geospatial/routing";
+import { getTravelModes } from "../../../services/travel/travelModes";
+import { saveTrip } from "../../../services/storage/trips";
+import { getForecast, getWeather } from "../../../services/weather/weather";
 import { addRecentSearch } from "../utils/recentSearches";
 
 export function useTripSearchData(from, to) {
