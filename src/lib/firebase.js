@@ -2,6 +2,11 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
+/*
+ * Firebase web configuration is client-side by design.
+ * Keep Firestore/Auth security rules in Firebase; do not treat this config
+ * as a server secret.
+ */
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
