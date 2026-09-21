@@ -11,7 +11,7 @@ function MapView({ fromLocation, toLocation, route }) {
   if (!fromLocation || !toLocation) return null;
 
   return (
-    <section className="relative z-0 my-8 overflow-hidden rounded-2xl border border-white/10 shadow-xl">
+    <section className="relative z-0 isolate my-10 overflow-hidden rounded-2xl border border-white/10 shadow-xl">
       <div className="border-b border-white/10 bg-slate-900/80 px-5 py-4">
         <h2 className="text-xl font-bold text-white">🗺️ Route Map</h2>
         <p className="mt-1 text-sm text-slate-400">
@@ -23,7 +23,7 @@ function MapView({ fromLocation, toLocation, route }) {
         center={[fromLocation.lat, fromLocation.lon]}
         zoom={6}
         scrollWheelZoom={false}
-        style={{ height: "400px", width: "100%", position: "relative" }}
+        style={{ height: "400px", width: "100%", position: "relative", zIndex: 0 }}
       >
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
