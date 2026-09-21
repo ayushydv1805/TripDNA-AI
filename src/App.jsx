@@ -6,6 +6,7 @@ import TripDetails from "./pages/TripDetails";
 import SavedTrips from "./pages/SavedTrips";
 import Profile from "./pages/Profile";
 import Favorites from "./pages/Favorites";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/saved" element={<SavedTrips />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
