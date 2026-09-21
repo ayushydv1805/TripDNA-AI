@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import jsPDF from "jspdf";
-import { generateTripPlan } from "../../services/ai";
+import { generateTripPlan } from "../../services/ai/tripPlan";
 
 function AITripPlanner({ from, to }) {
   const [days, setDays] = useState(3);
