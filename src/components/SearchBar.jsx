@@ -14,12 +14,19 @@ function SearchBar() {
   const [searchingFrom, setSearchingFrom] = useState(false);
   const [searchingTo, setSearchingTo] = useState(false);
 
-  async function handleLocationChange(value, setValue, setSuggestions, setSearching) {
+  async function handleLocationChange(
+    value,
+    setValue,
+    setSuggestions,
+    setSearching,
+    requestRef
+  ) {
     setValue(value);
     const currentRequest = ++requestRef.current;
 
     if (value.trim().length < 2) {
       setSuggestions([]);
+      setSearching(false);
       return;
     }
 
@@ -33,11 +40,12 @@ function SearchBar() {
       }
     } catch (error) {
       console.error("Location suggestion error:", error);
-      if (currentRequest === requestId.current) {
+
+      if (currentRequest === requestRef.current) {
         setSuggestions([]);
       }
     } finally {
-      if (currentRequest === requestId.current) {
+      if (currentRequest === requestRef.current) {
         setSearching(false);
       }
     }
