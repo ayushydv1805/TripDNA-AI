@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
-import { getFavorites, removeFavorite } from "../services/favorites";
+import { getFavorites, removeFavorite } from "../services/storage/favorites";
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
