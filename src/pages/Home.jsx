@@ -1,12 +1,13 @@
-import Navbar from "../components/Navbar";
-import Hero from "../components/Hero";
-import SearchBar from "../components/SearchBar";
-import PopularDestinations from "../components/PopularDestinations";
-import Features from "../components/Features";
-import Testimonials from "../components/Testimonials";
-import Footer from "../components/Footer";
-import RecentSearches from "../components/RecentSearches";
-import SavedTrips from "../components/SavedTrips";
+import Navbar from "../components/layout/Navbar";
+import Footer from "../components/layout/Footer";
+import Hero from "../components/home/Hero";
+import SearchBar from "../components/search/SearchBar";
+import PopularDestinations from "../components/home/PopularDestinations";
+import RecentSearches from "../components/home/RecentSearches";
+import SavedTripsPreview from "../components/home/SavedTrips";
+import Features from "../components/home/Features";
+import Testimonials from "../components/home/Testimonials";
+
 function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-black text-white">
@@ -15,10 +16,10 @@ function Home() {
       <SearchBar />
       <PopularDestinations />
       <RecentSearches />
-      <SavedTrips />
+      <SavedTripsPreview />
       <Features />
       <Testimonials />
-<Footer />
+      <Footer />
     </div>
   );
 }
