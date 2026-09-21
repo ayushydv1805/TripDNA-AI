@@ -1,6 +1,5 @@
 import { useSearchParams } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
-import MapView from "../components/trip/MapView";
 import SearchResults from "../features/search/components/SearchResults";
 import { useTripSearchData } from "../features/search/hooks/useTripSearchData";
 
@@ -45,13 +44,6 @@ function Search() {
 
         <SearchResults from={from} to={to} trip={trip} />
 
-        {trip.routeInfo && (
-          <MapView
-            fromLocation={trip.fromLocation}
-            toLocation={trip.toLocation}
-            route={trip.routeInfo}
-          />
-        )}
       </main>
     </div>
   );
