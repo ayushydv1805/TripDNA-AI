@@ -9,6 +9,7 @@ import RestaurantsCard from "../../../components/discovery/RestaurantsCard";
 import WeatherCard from "../../../components/discovery/WeatherCard";
 import BookingCard from "../../../components/trip/BookingCard";
 import BudgetCard from "../../../components/trip/BudgetCard";
+import MapView from "../../../components/trip/MapView";
 import RouteCard from "../../../components/trip/RouteCard";
 import SmartRecommendation from "../../../components/trip/SmartRecommendation";
 import TravelAdvisory from "../../../components/trip/TravelAdvisory";
@@ -83,6 +84,12 @@ function SearchResults({ from, to, trip }) {
         to={to}
         distance={trip.routeInfo.distance}
         duration={trip.routeInfo.duration}
+      />
+
+      <MapView
+        fromLocation={trip.fromLocation}
+        toLocation={trip.toLocation}
+        route={trip.routeInfo}
       />
 
     </>
