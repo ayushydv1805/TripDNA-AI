@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { askTripAI } from "../../services/aichat";
+import { askTripAI } from "../../services/ai/chat";
 
 function AIChat({ from, to }) {
   const [question, setQuestion] = useState("");
