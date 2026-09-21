@@ -4,7 +4,8 @@ import { searchPlaces } from "../services/autocomplete";
 
 function SearchBar() {
   const navigate = useNavigate();
-  const requestId = useRef(0);
+  const fromRequestId = useRef(0);
+  const toRequestId = useRef(0);
 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -15,7 +16,7 @@ function SearchBar() {
 
   async function handleLocationChange(value, setValue, setSuggestions, setSearching) {
     setValue(value);
-    const currentRequest = ++requestId.current;
+    const currentRequest = ++requestRef.current;
 
     if (value.trim().length < 2) {
       setSuggestions([]);
@@ -27,7 +28,7 @@ function SearchBar() {
     try {
       const places = await searchPlaces(value);
 
-      if (currentRequest === requestId.current) {
+      if (currentRequest === requestRef.current) {
         setSuggestions(places);
       }
     } catch (error) {
@@ -71,7 +72,8 @@ function SearchBar() {
               event.target.value,
               setFrom,
               setFromSuggestions,
-              setSearchingFrom
+              setSearchingFrom,
+              fromRequestId
             )
           }
           className="w-full rounded-xl border border-white/20 bg-white/10 p-4 outline-none transition focus:border-cyan-400/50"
@@ -90,6 +92,7 @@ function SearchBar() {
                 onClick={() => {
                   setFrom(place.properties?.formatted || "");
                   setFromSuggestions([]);
+                  ++fromRequestId.current;
                 }}
                 className="block w-full border-b border-slate-700 p-3 text-left transition hover:bg-cyan-600"
               >
@@ -110,7 +113,8 @@ function SearchBar() {
               event.target.value,
               setTo,
               setToSuggestions,
-              setSearchingTo
+              setSearchingTo,
+              toRequestId
             )
           }
           className="w-full rounded-xl border border-white/20 bg-white/10 p-4 outline-none transition focus:border-cyan-400/50"
@@ -129,6 +133,7 @@ function SearchBar() {
                 onClick={() => {
                   setTo(place.properties?.formatted || "");
                   setToSuggestions([]);
+                  ++toRequestId.current;
                 }}
                 className="block w-full border-b border-slate-700 p-3 text-left transition hover:bg-cyan-600"
               >
