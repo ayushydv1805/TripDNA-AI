@@ -63,7 +63,7 @@ function MapView({ fromLocation, toLocation, route }) {
           </div>
         </div>
 
-        <div className="h-[62vh] min-h-[430px] w-full lg:h-[calc(100vh-170px)] lg:min-h-[520px]">
+        <div className="h-[460px] w-full sm:h-[520px] lg:h-[560px]">
           <MapContainer
             center={[fromLocation.lat, fromLocation.lon]}
             zoom={6}
