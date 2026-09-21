@@ -1,27 +1,36 @@
 export function saveTrip(trip) {
-  const trips =
-    JSON.parse(localStorage.getItem("savedTrips")) || [];
+  try {
+    const trips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
 
-  trips.unshift(trip);
+    const withoutDuplicate = trips.filter(
+      (item) =>
+        item.from?.toLowerCase() !== trip.from?.toLowerCase() ||
+        item.to?.toLowerCase() !== trip.to?.toLowerCase()
+    );
 
-  localStorage.setItem(
-    "savedTrips",
-    JSON.stringify(trips.slice(0, 20))
-  );
+    const updated = [trip, ...withoutDuplicate].slice(0, 20);
+
+    localStorage.setItem("savedTrips", JSON.stringify(updated));
+  } catch (error) {
+    console.error("Failed to save trip:", error);
+  }
 }
 
 export function getTrips() {
-  return JSON.parse(localStorage.getItem("savedTrips")) || [];
+  try {
+    const trips = JSON.parse(localStorage.getItem("savedTrips") || "[]");
+    return Array.isArray(trips) ? trips : [];
+  } catch (error) {
+    console.error("Failed to read saved trips:", error);
+    return [];
+  }
 }
 
 export function deleteTrip(index) {
-  const trips =
-    JSON.parse(localStorage.getItem("savedTrips")) || [];
+  const trips = getTrips();
+
+  if (index < 0 || index >= trips.length) return;
 
   trips.splice(index, 1);
-
-  localStorage.setItem(
-    "savedTrips",
-    JSON.stringify(trips)
-  );
+  localStorage.setItem("savedTrips", JSON.stringify(trips));
 }
