@@ -1,4 +1,4 @@
-import { saveFavorite } from "../../services/favorites";
+import { saveFavorite } from "../../services/storage/favorites";
 
 function AttractionsCard({ attractions }) {
   if (!Array.isArray(attractions) || attractions.length === 0) return null;
