@@ -22,6 +22,7 @@ function MapView({ fromLocation, toLocation, route }) {
       <MapContainer
         center={[fromLocation.lat, fromLocation.lon]}
         zoom={6}
+        scrollWheelZoom={false}
         style={{ height: "400px", width: "100%", position: "relative" }}
       >
         <TileLayer
