@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { deleteTrip, getTrips } from "../../services/trips";
+import { deleteTrip, getTrips } from "../../services/storage/trips";
 
 function SavedTrips() {
   const [trips, setTrips] = useState([]);
