@@ -1,1 +1,1 @@
-export { getHotels } from "./hotels.js";
+export { getHotels } from "./geospatial/hotels.js";
