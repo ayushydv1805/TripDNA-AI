@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { searchPlaces } from "../../services/autocomplete";
+import { searchPlaces } from "../../services/geospatial/autocomplete.js";
 
 function SearchBar() {
   const navigate = useNavigate();
