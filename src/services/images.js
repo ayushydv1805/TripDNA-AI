@@ -1,35 +1,37 @@
-
 const API_KEY = import.meta.env.VITE_UNSPLASH_API_KEY;
 
-export async function getDestinationImage(place) {
+async function searchImages(place, perPage) {
+  if (!API_KEY || !place?.trim()) return [];
+
   try {
     const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${place}&per_page=1&client_id=${API_KEY}`
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
+        place.trim()
+      )}&per_page=${perPage}&client_id=${API_KEY}`
     );
 
-    const data = await response.json();
-
-    if (data.results.length > 0) {
-      return data.results[0].urls.regular;
+    if (!response.ok) {
+      throw new Error(`Unsplash request failed (${response.status}).`);
     }
 
-    return null;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-}
-export async function getDestinationImages(place) {
-  try {
-    const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${place}&per_page=6&client_id=${API_KEY}`
-    );
-
     const data = await response.json();
 
-    return data.results.map((img) => img.urls.regular);
-  } catch (err) {
-    console.error(err);
+    return Array.isArray(data.results)
+      ? data.results
+          .map((image) => image?.urls?.regular)
+          .filter(Boolean)
+      : [];
+  } catch (error) {
+    console.error("Image search error:", error);
     return [];
   }
+}
+
+export async function getDestinationImage(place) {
+  const images = await searchImages(place, 1);
+  return images[0] || null;
+}
+
+export async function getDestinationImages(place) {
+  return searchImages(place, 6);
 }
