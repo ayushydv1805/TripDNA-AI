@@ -1,4 +1,4 @@
-import { saveFavorite } from "../../services/favorites";
+import { saveFavorite } from "../../services/storage/favorites";
 
 function HotelsCard({ hotels }) {
   if (!Array.isArray(hotels) || hotels.length === 0) return null;
