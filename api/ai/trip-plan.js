@@ -205,6 +205,11 @@ export default async function handler(req, res) {
       startDate: startDate || String(result.startDate || "").slice(0, 10),
       endDate: endDate || String(result.endDate || "").slice(0, 10),
       travelers,
+      budget,
+      tripType,
+      travelStyle,
+      foodPreference,
+      interests,
       days: validDays,
       budgetBreakdown: Array.isArray(result.budgetBreakdown) ? result.budgetBreakdown.slice(0, 12).map((item) => ({
         category: String(item.category || "Other").slice(0, 60),
