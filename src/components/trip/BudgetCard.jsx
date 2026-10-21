@@ -92,7 +92,7 @@ function BudgetCard({ distance, from = "", to = "" }) {
     ["hotelPerRoomPerNight", "Hotel per room/night (₹)", 0, 1000000, 100],
     ["guestsPerRoom", "Guests per room", 1, 10, 1],
     ["foodPerPersonPerDay", "Food per person/day (₹)", 0, 100000, 50],
-    ["activitiesPerPerson", "Activities per person (₹)", 0, 1000000, 100],
+    ["activitiesPerPerson", "Activities per person (trip total, ₹)", 0, 1000000, 100],
     ["otherCosts", "Other planned costs (₹)", 0, 10000000, 100],
     ["contingencyPercent", "Contingency (%)", 0, 30, 1],
   ];
