@@ -1,5 +1,9 @@
 name: Refresh native build dependencies
 
+concurrency:
+  group: refresh-native-lock-${{ github.ref }}
+  cancel-in-progress: false
+
 on:
   push:
     branches:
@@ -40,5 +44,7 @@ jobs:
           else
             git add package-lock.json
             git commit -m "chore: refresh lockfile for native packaging"
+            git fetch origin "${GITHUB_REF_NAME}"
+            git rebase "origin/${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
