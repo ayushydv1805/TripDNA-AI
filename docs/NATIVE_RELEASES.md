@@ -19,7 +19,9 @@ The Windows installer is currently unsigned. Windows may show SmartScreen/unknow
 3. Choose **Run workflow** to build test artifacts. Download the Android APK and Windows installers from that workflow run's **Artifacts** section. Artifacts expire after 30 days.
 4. To create permanent download links, open **Releases → Draft a new release**, choose a tag such as v1.0.0 pointing at the verified main commit, and publish it. The workflow builds both platforms for that release tag and attaches the APK, EXE, and any MSI file to the release. If a build fails, fix the workflow/build first and rerun it.
 
-Latest release page: https://github.com/ayushydv1805/TripDNA-AI/releases/latest
+Automated preview downloads (updated by successful main-branch packaging builds): https://github.com/ayushydv1805/TripDNA-AI/releases/tag/native-latest
+
+Stable releases: https://github.com/ayushydv1805/TripDNA-AI/releases/latest
 
 ## Native API configuration
 
