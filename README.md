@@ -524,6 +524,19 @@ npm run dev
 
 ---
 
+## 🔐 Login, Cloud Backup and Offline Trip History
+
+TripDNA supports email/password sign-in and account creation through Firebase Authentication. Sign-in is optional; guests can still use the travel planner.
+
+- The app saves route searches and recent history in local storage.
+- Up to four compact trip-result snapshots are cached on the device, so a previously searched dashboard can render after closing and reopening the app. It also remains available when live data cannot be refreshed.
+- With Firebase configured, saved routes, recent searches and favorites merge with the user's Firestore backup on sign-in and are synced after changes.
+- Firebase needs the Email/Password provider, the VITE_FIREBASE_* web configuration values, and per-user Firestore rules. Follow [Firebase setup](docs/FIREBASE_SETUP.md).
+
+The cache of full destination results intentionally stays on-device; it is not uploaded as one large Firestore document.
+
+---
+
 ## 🧪 Available Scripts
 
 | Command | Purpose |
@@ -623,13 +636,13 @@ Key rules:
 
 - External APIs can rate-limit or become unavailable.
 - Some browser-side provider keys are exposed to the client by design and should be restricted at the provider level.
-- Favorites and saved trips use browser localStorage.
+- Saved trips, recent searches, favorites and compact trip-result snapshots persist locally; configured Firebase accounts also back up route history and favorites to Firestore.
 - There is currently no complete automated test suite.
 - Route and travel-mode costs are estimates, not live booking quotes.
 - Weather and place information can change after the response is retrieved.
 - AI output is generated guidance, not a guaranteed real-time travel source.
 - The Gemini integration exists as a separate service implementation but is not the primary AI flow.
-- Firebase is isolated as an SDK layer, while the current main save/favorite flow uses local storage.
+- Firebase handles optional email/password authentication and cloud backup; local storage remains the offline-first source for full trip snapshots.
 
 ---
 
@@ -653,7 +666,7 @@ Key rules:
 
 ### Data
 
-- [ ] Persist trips and favorites through Firebase after authentication is enabled.
+- [ ] Expand cloud sync to full trip snapshots while preserving Firestore document-size limits.
 - [ ] Add richer trip history.
 - [ ] Add custom budget assumptions.
 - [ ] Add date-aware itinerary planning.
@@ -668,7 +681,7 @@ Key rules:
 
 ### Product
 
-- [ ] User authentication and profiles.
+- [ ] Add Google sign-in and email verification.
 - [ ] Shareable trip URLs.
 - [ ] Collaborative trip planning.
 - [ ] Booking links with richer route context.
