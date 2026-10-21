@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../../app/AuthContext";
 import { Link } from "react-router-dom";
 import { getRecentSearches } from "../../features/search/utils/recentSearches";
 
 function RecentSearches() {
   const [searches, setSearches] = useState([]);
+  const { cloudStatus } = useAuth();
 
   useEffect(() => {
     setSearches(getRecentSearches());
-  }, []);
+  }, [cloudStatus]);
 
   if (searches.length === 0) return null;
 
