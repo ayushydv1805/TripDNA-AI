@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../app/AuthContext";
+import { useAuth } from "../../app/useAuth";
 import { Link } from "react-router-dom";
 import { deleteTrip, getTrips } from "../../services/storage/trips";
 
