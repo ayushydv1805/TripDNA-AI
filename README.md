@@ -41,6 +41,8 @@ The app is built as a Vite SPA with a feature-oriented React structure. External
 - Environment Variables
 - Local Development
 - Available Scripts
+- Editable Itineraries and Expense Tracking
+- Offline Travel Packs
 - Vercel Deployment
 - Error Handling
 - Refactoring Principles
@@ -107,9 +109,9 @@ The app searches for hotels, restaurants, tourist attractions, hospitals, pharma
 
 The map shows the starting location, destination, and route polyline. Individual places can open in Google Maps.
 
-### 💰 Budget Estimation
+### 💰 Budget Estimation and Expense Tracking
 
-The budget module estimates major trip costs using configurable assumptions for fuel, accommodation, food, and sightseeing. These are estimates, not live booking prices.
+The budget module estimates fuel, hotel rooms, food, activities, other costs, optional contingency, a group total, and a per-person split. Users can edit mileage, fuel price, room occupancy, nights, meal days and category allowances. An expense log records actual trip spend locally and compares it with the plan. These are estimates, not live booking prices.
 
 ### 🚆 Travel Mode Comparison
 
@@ -127,13 +129,19 @@ Hotels, restaurants, and attractions can be saved locally with their type, name,
 
 Recent trip searches are stored in browser localStorage and can be viewed from the Saved Trips screen.
 
-### 🤖 AI Trip Planner
+### 🤖 Editable Day-by-Day AI Trip Planner
 
-Users can provide trip length, budget, and trip type to request a generated itinerary through the server-side AI endpoint.
+Users can enter travel dates, group size, trip style, preferred pace, food preference and interests. The server-side planner returns a structured day-by-day plan with timed activities, place suggestions, descriptions and indicative INR costs. Users can edit activity details, reorder stops, remove activities, add custom stops, regenerate one day without replacing the other days, and export, copy, listen to, or share the itinerary. Saved itinerary edits persist locally.
+
+AI-created places, prices and timings are suggestions; verify current information before booking.
 
 ### 💬 AI Travel Assistant
 
 Users can ask trip-specific questions with the selected start and destination passed as context.
+
+### 📦 Offline Travel Packs
+
+Save up to eight compact trip packs on the same browser or app WebView. A pack can include the itinerary, route distance/duration, budget settings, recorded expenses and a small snapshot of destination weather and places. The Offline Packs screen opens these saved details without requesting live data and can export a JSON copy for backup. Live conditions and availability are not refreshed offline.
 
 ### 📄 PDF Export
 
@@ -545,6 +553,7 @@ The cache of full destination results intentionally stays on-device; it is not u
 | npm run build | Build production frontend |
 | npm run preview | Preview production build locally |
 | npm run lint | Run ESLint |
+| npm test | Run travel budget unit tests |
 
 ---
 

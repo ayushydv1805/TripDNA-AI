@@ -21,8 +21,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Dependency audit snapshot (non-blocking)
+        run: |
+          npm audit --json > /tmp/npm-audit.json || true
+          node --input-type=module -e 'import fs from "node:fs"; const report = JSON.parse(fs.readFileSync("/tmp/npm-audit.json", "utf8")); console.log("Audit totals:", JSON.stringify(report.metadata?.vulnerabilities || {})); for (const [name, item] of Object.entries(report.vulnerabilities || {})) console.log([item.severity.toUpperCase(), name, "direct=" + item.isDirect, "dev=" + item.dev, "range=" + (item.range || "unknown"), "via=" + JSON.stringify((item.via || []).map(v => typeof v === "string" ? v : { title: v.title, url: v.url, range: v.range })), "fix=" + JSON.stringify(item.fixAvailable)].join(" | "));'
+
       - name: Lint
         run: npm run lint
+
+      - name: Unit tests
+        run: npm test
 
       - name: Build
         run: npm run build

@@ -7,6 +7,7 @@ import SavedTrips from "../pages/SavedTrips";
 import Profile from "../pages/Profile";
 import Favorites from "../pages/Favorites";
 import Login from "../pages/Login";
+import OfflineTrips from "../pages/OfflineTrips";
 import NotFound from "../pages/NotFound";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/offline" element={<OfflineTrips />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
