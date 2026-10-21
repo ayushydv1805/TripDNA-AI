@@ -578,7 +578,9 @@ The cache of full destination results intentionally stays on-device; it is not u
 
 Use [Native Release Instructions](docs/NATIVE_RELEASES.md) for the Android APK, Windows setup executable, workflow artifacts, versioned releases, signing limitations and required API configuration. The packaging workflow builds Android through Capacitor and Windows through Tauri. Downloadable binaries are created by GitHub Actions; they are not committed to the source repository.
 
-GitHub Releases: https://github.com/ayushydv1805/TripDNA-AI/releases/latest
+Native preview downloads: https://github.com/ayushydv1805/TripDNA-AI/releases/tag/native-latest
+
+Stable releases: https://github.com/ayushydv1805/TripDNA-AI/releases/latest
 
 The first Android package is a debug-signed sideload APK, not a Google Play-ready release. The Windows installer is unsigned and may trigger SmartScreen warnings. AI requests in native builds use the hosted API at https://trip-dna-ai.vercel.app and require that API deployment and server-side OPENROUTER_API_KEY to be available.
 
