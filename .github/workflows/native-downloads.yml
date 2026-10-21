@@ -105,7 +105,7 @@ jobs:
         run: npm ci
 
       - name: Generate app icons
-        run: npx tauri icon public/favicon.svg
+        run: npx tauri icon public/tripdna-app-icon.svg
 
       - name: Build Tauri installers
         run: npm run tauri:build
