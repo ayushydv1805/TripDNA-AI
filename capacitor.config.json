@@ -1,0 +1,8 @@
+{
+  "appId": "com.ayushyadav.tripdna",
+  "appName": "TripDNA AI",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

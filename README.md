@@ -43,6 +43,8 @@ The app is built as a Vite SPA with a feature-oriented React structure. External
 - Available Scripts
 - Editable Itineraries and Expense Tracking
 - Offline Travel Packs
+- Backup and Restore
+- Android and Windows Downloads
 - Vercel Deployment
 - Error Handling
 - Refactoring Principles
@@ -142,6 +144,14 @@ Users can ask trip-specific questions with the selected start and destination pa
 ### 📦 Offline Travel Packs
 
 Save up to eight compact trip packs on the same browser or app WebView. A pack can include the itinerary, route distance/duration, budget settings, recorded expenses and a small snapshot of destination weather and places. The Offline Packs screen opens these saved details without requesting live data and can export a JSON copy for backup. Live conditions and availability are not refreshed offline.
+
+### 🗄️ Portable Backup and Restore
+
+The **Profile → Backup & Restore** screen exports TripDNA's local saved trips, favorites, recent searches, compact route snapshots, itineraries, offline packs and route budget/expense records into one versioned JSON backup. Restores validate file format and supported record counts before changing data, leave unrelated browser storage untouched, and attempt rollback if device storage fills during restoration. A restore only affects TripDNA data on the current device; it does not overwrite Firebase cloud records. Backups can contain travel history and expense descriptions, so keep them private.
+
+### 🗄️ Portable Backup and Restore
+
+The **Profile → Backup & Restore** screen exports TripDNA's local saved trips, favorites, recent searches, compact route snapshots, itineraries, offline packs and route-budget/expense records into one versioned JSON backup. Restores validate the file and supported record counts before changing any data, leave unrelated browser storage untouched, and keep a best-effort rollback if device storage fills during restoration. A restore only affects TripDNA data on the current device; it does not overwrite Firebase cloud records. Backups can contain travel history and expense descriptions, so store them privately.
 
 ### 📄 PDF Export
 
@@ -443,7 +453,10 @@ TripDNA-AI/
 | /trip/:id | Trip details screen |
 | /saved | Saved trips |
 | /favorites | Saved places |
-| /profile | Local traveler dashboard |
+| /profile | Traveler dashboard |
+| /offline | Saved offline trip packs |
+| /backup | Export or restore TripDNA-local data |
+| /login | Sign in or create a cloud account |
 | * | Custom 404 |
 
 Search URLs use:
@@ -499,6 +512,8 @@ VITE_FIREBASE_APP_ID=
 
 ~~~env
 OPENROUTER_API_KEY=
+# Optional comma-separated browser origins for the AI API (include your custom production domain if needed).
+TRIPDNA_ALLOWED_ORIGINS=https://trip-dna-ai.vercel.app
 ~~~
 
 Never commit secrets. Use .env.local for local private values. The repository includes .env.example as a template.
@@ -541,7 +556,7 @@ TripDNA supports email/password sign-in and account creation through Firebase Au
 - With Firebase configured, saved routes, recent searches and favorites merge with the user's Firestore backup on sign-in and are synced after changes.
 - Firebase needs the Email/Password provider, the VITE_FIREBASE_* web configuration values, and per-user Firestore rules. Follow [Firebase setup](docs/FIREBASE_SETUP.md).
 
-The cache of full destination results intentionally stays on-device; it is not uploaded as one large Firestore document.
+The cache of full destination results intentionally stays on-device; it is not uploaded as one large Firestore document. Use [Native Release Instructions](docs/NATIVE_RELEASES.md) to move local TripDNA data between devices.
 
 ---
 
@@ -553,7 +568,21 @@ The cache of full destination results intentionally stays on-device; it is not u
 | npm run build | Build production frontend |
 | npm run preview | Preview production build locally |
 | npm run lint | Run ESLint |
-| npm test | Run travel budget unit tests |
+| npm test | Run budget and backup/restore unit tests |
+| npm run cap:sync | Sync web assets into Android |
+| npm run tauri:build | Build the Windows desktop installer |
+
+---
+
+## 📦 Android APK and Windows Installer
+
+Use [Native Release Instructions](docs/NATIVE_RELEASES.md) for the Android APK, Windows setup executable, workflow artifacts, versioned releases, signing limitations and required API configuration. The packaging workflow builds Android through Capacitor and Windows through Tauri. Downloadable binaries are created by GitHub Actions; they are not committed to the source repository.
+
+Native preview downloads: https://github.com/ayushydv1805/TripDNA-AI/releases/tag/native-latest
+
+Stable releases: https://github.com/ayushydv1805/TripDNA-AI/releases/latest
+
+The first Android package is a debug-signed sideload APK, not a Google Play-ready release. The Windows installer is unsigned and may trigger SmartScreen warnings. AI requests in native builds use the hosted API at https://trip-dna-ai.vercel.app and require that API deployment and server-side OPENROUTER_API_KEY to be available.
 
 ---
 
@@ -570,7 +599,7 @@ Server functions:
 /api/ai/trip-plan
 ~~~
 
-These functions read the server-side OPENROUTER_API_KEY.
+These functions read the server-side OPENROUTER_API_KEY. They validate input sizes, avoid caching AI responses, enforce allowed browser origins, and time-limit upstream calls. Configure TRIPDNA_ALLOWED_ORIGINS when using a custom production domain. Origin checks reduce cross-site browser abuse but do not replace provider quotas or robust server-side rate limiting.
 
 ---
 
@@ -646,7 +675,7 @@ Key rules:
 - External APIs can rate-limit or become unavailable.
 - Some browser-side provider keys are exposed to the client by design and should be restricted at the provider level.
 - Saved trips, recent searches, favorites and compact trip-result snapshots persist locally; configured Firebase accounts also back up route history and favorites to Firestore.
-- There is currently no complete automated test suite.
+- Automated unit tests cover budget calculations and backup/restore; full browser end-to-end tests and real Firebase/OpenRouter integration tests still need credentials and a test environment.
 - Route and travel-mode costs are estimates, not live booking quotes.
 - Weather and place information can change after the response is retrieved.
 - AI output is generated guidance, not a guaranteed real-time travel source.
@@ -659,7 +688,8 @@ Key rules:
 
 ### Reliability
 
-- [ ] Unit tests for travel calculations.
+- [x] Unit tests for travel calculations.
+- [x] Unit tests for backup/restore validation and rollback boundaries.
 - [ ] Tests for trip search loading.
 - [ ] Component tests.
 - [ ] End-to-end tests for the main search journey.
@@ -682,7 +712,7 @@ Key rules:
 
 ### AI
 
-- [ ] Add rate limiting and abuse protection.
+- [ ] Add reliable shared rate limiting/abuse protection (for example, a server-side rate-limit store or hosting-level rule).
 - [ ] Add structured itinerary validation.
 - [ ] Return structured itinerary data instead of markdown-only responses.
 - [ ] Add AI provider fallback support.
@@ -690,6 +720,7 @@ Key rules:
 
 ### Product
 
+- [x] Package the shared frontend for Android APK and Windows desktop builds.
 - [ ] Add Google sign-in and email verification.
 - [ ] Shareable trip URLs.
 - [ ] Collaborative trip planning.

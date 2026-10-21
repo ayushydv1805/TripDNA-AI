@@ -1,5 +1,7 @@
+const API_BASE = String(import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+
 async function requestItinerary(payload) {
-  const response = await fetch("/api/ai/trip-plan", {
+  const response = await fetch(API_BASE + "/api/ai/trip-plan", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

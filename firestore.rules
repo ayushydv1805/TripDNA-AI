@@ -1,0 +1,28 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each authenticated user can access only their own TripDNA backup document.
+    match /users/{userId}/appData/{documentId} {
+      function ownsAccount() {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      allow read: if ownsAccount();
+      allow create, update: if ownsAccount()
+        && request.resource.data.keys().hasOnly([
+          'savedTrips',
+          'favorites',
+          'recentSearches',
+          'updatedAt'
+        ])
+        && request.resource.data.savedTrips is list
+        && request.resource.data.savedTrips.size() <= 20
+        && request.resource.data.favorites is list
+        && request.resource.data.favorites.size() <= 100
+        && request.resource.data.recentSearches is list
+        && request.resource.data.recentSearches.size() <= 10;
+      allow delete: if ownsAccount();
+    }
+  }
+}
