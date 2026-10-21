@@ -21,17 +21,17 @@ permissions:
 
 env:
   VITE_API_BASE_URL: https://trip-dna-ai.vercel.app
-  VITE_GEOAPIFY_API_KEY: \${{ secrets.VITE_GEOAPIFY_API_KEY }}
-  VITE_OPENWEATHER_API_KEY: \${{ secrets.VITE_OPENWEATHER_API_KEY }}
-  VITE_UNSPLASH_API_KEY: \${{ secrets.VITE_UNSPLASH_API_KEY }}
-  VITE_YOUTUBE_API_KEY: \${{ secrets.VITE_YOUTUBE_API_KEY }}
-  VITE_GEMINI_API_KEY: \${{ secrets.VITE_GEMINI_API_KEY }}
-  VITE_FIREBASE_API_KEY: \${{ secrets.VITE_FIREBASE_API_KEY }}
-  VITE_FIREBASE_AUTH_DOMAIN: \${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-  VITE_FIREBASE_PROJECT_ID: \${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-  VITE_FIREBASE_STORAGE_BUCKET: \${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-  VITE_FIREBASE_MESSAGING_SENDER_ID: \${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-  VITE_FIREBASE_APP_ID: \${{ secrets.VITE_FIREBASE_APP_ID }}
+  VITE_GEOAPIFY_API_KEY: ${{ secrets.VITE_GEOAPIFY_API_KEY }}
+  VITE_OPENWEATHER_API_KEY: ${{ secrets.VITE_OPENWEATHER_API_KEY }}
+  VITE_UNSPLASH_API_KEY: ${{ secrets.VITE_UNSPLASH_API_KEY }}
+  VITE_YOUTUBE_API_KEY: ${{ secrets.VITE_YOUTUBE_API_KEY }}
+  VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY }}
+  VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+  VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+  VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+  VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+  VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+  VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
 jobs:
   android:
@@ -153,8 +153,12 @@ jobs:
       - name: Publish downloads
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: \${{ github.event.release.tag_name }}
+          tag_name: ${{ github.event_name == 'release' && github.event.release.tag_name || 'native-latest' }}
+          name: ${{ github.event_name == 'release' && github.event.release.name || 'TripDNA AI — Native Preview' }}
+          target_commitish: ${{ github.sha }}
+          prerelease: ${{ github.event_name != 'release' }}
+          make_latest: false
+          body: ${{ github.event_name == 'release' && github.event.release.body || 'Automated preview build. Android APK is debug-signed for sideload testing and the Windows installer is unsigned. Not an official app-store release.' }}
           files: release-assets/*
           overwrite_files: true
           fail_on_unmatched_files: true
-          generate_release_notes: true
