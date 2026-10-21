@@ -159,7 +159,7 @@ jobs:
           name: ${{ github.event_name == 'release' && github.event.release.name || 'TripDNA AI — Native Preview' }}
           target_commitish: ${{ github.sha }}
           prerelease: ${{ github.event_name != 'release' }}
-          make_latest: false
+          make_latest: ${{ github.event_name == 'release' && 'true' || 'false' }}
           body: ${{ github.event_name == 'release' && github.event.release.body || 'Automated preview build. Android APK is debug-signed for sideload testing and the Windows installer is unsigned. Not an official app-store release.' }}
           files: release-assets/*
           overwrite_files: true
