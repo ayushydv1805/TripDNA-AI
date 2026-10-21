@@ -1,3 +1,5 @@
+import process from "node:process";
+
 function normalizeOrigin(value) {
   if (typeof value !== "string" || !value.trim()) return null;
   try {
