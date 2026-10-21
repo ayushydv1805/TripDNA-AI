@@ -80,6 +80,8 @@ async function requestPlan(apiKey, prompt) {
 export default async function handler(req, res) {
   if (!secureApiRequest(req, res)) return;
 
+  if (req.method === "OPTIONS") return res.status(204).end();
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return sendError(res, 405, "Method not allowed");
