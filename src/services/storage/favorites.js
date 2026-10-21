@@ -1,9 +1,11 @@
+import { scheduleCloudSync } from "./cloudSync";
+
 const FAVORITES_KEY = "favorites";
 
 function readFavorites() {
   try {
     const value = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
-    return Array.isArray(value) ? value : [];
+    return Array.isArray(value) ? value.filter((item) => item && typeof item === "object") : [];
   } catch (error) {
     console.error("Failed to read favorites:", error);
     return [];
@@ -15,33 +17,44 @@ export function getFavorites() {
 }
 
 export function saveFavorite(item) {
+  if (!item || typeof item !== "object") return false;
   const favorites = readFavorites();
+  const normalizedName = String(item.name || "").trim().toLowerCase();
+  const normalizedAddress = String(item.address || "").trim().toLowerCase();
 
   const exists = favorites.some(
     (favorite) =>
-      favorite.name === item.name &&
-      favorite.address === item.address
+      String(favorite.name || "").trim().toLowerCase() === normalizedName &&
+      String(favorite.address || "").trim().toLowerCase() === normalizedAddress
   );
-
   if (exists) return false;
 
-  favorites.push({
+  favorites.unshift({
     ...item,
-    id:
-      item.id ||
-      [item.type || "place", item.name, item.address].join("-"),
+    id: item.id || [item.type || "place", item.name, item.address].join("-"),
+    updatedAt: new Date().toISOString(),
   });
 
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
-  return true;
+  try {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    scheduleCloudSync();
+    return true;
+  } catch (error) {
+    console.error("Failed to save favorite:", error);
+    return false;
+  }
 }
 
 export function removeFavorite(item) {
+  if (!item) return;
   const updated = readFavorites().filter(
-    (favorite) =>
-      favorite.id !== item.id &&
+    (favorite) => favorite.id !== item.id &&
       !(favorite.name === item.name && favorite.address === item.address)
   );
-
-  localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+  try {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+    scheduleCloudSync();
+  } catch (error) {
+    console.error("Failed to remove favorite:", error);
+  }
 }
