@@ -31,6 +31,14 @@ test("native Android WebView origin gets narrowly scoped CORS headers", () => {
   assert.equal(res.headers.get("cache-control"), "no-store, max-age=0");
 });
 
+test("Capacitor custom-scheme origin is accepted", () => {
+  const req = { headers: { origin: "capacitor://localhost" } };
+  const res = makeResponse();
+
+  assert.equal(secureApiRequest(req, res), true);
+  assert.equal(res.headers.get("access-control-allow-origin"), "capacitor://localhost");
+});
+
 test("unrecognized browser origin is rejected", () => {
   const req = { headers: { origin: "https://not-tripdna.example" } };
   const res = makeResponse();
