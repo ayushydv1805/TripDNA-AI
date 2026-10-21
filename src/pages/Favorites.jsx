@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
+import { useAuth } from "../app/AuthContext";
 import { Link } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import { getFavorites, removeFavorite } from "../services/storage/favorites";
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
+  const { cloudStatus } = useAuth();
 
   useEffect(() => {
     setFavorites(getFavorites());
-  }, []);
+  }, [cloudStatus]);
 
   function handleRemove(item) {
     removeFavorite(item);
