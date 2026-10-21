@@ -73,10 +73,10 @@ function SearchResults({ from, to, trip }) {
       <EmergencyServices title="Nearby ATMs" icon="🏧" places={trip.atms} />
       <EmergencyServices title="Nearby Petrol Pumps" icon="⛽" places={trip.petrolPumps} />
 
-      <BudgetCard budget={trip.budget} />
+      <BudgetCard key={from + "|" + to} distance={trip.routeInfo.distance} from={from} to={to} />
       <BookingCard from={from} to={to} />
 
-      <AITripPlanner from={from} to={to} />
+      <AITripPlanner key={from + "|" + to} from={from} to={to} />
       <AIChat from={from} to={to} />
 
       <RouteCard
