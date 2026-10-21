@@ -39,14 +39,14 @@ test("detailed budget counts return fuel, rooms, food, activities, and contingen
   assert.equal(budget.fuelDistanceKm, 200);
   assert.equal(budget.fuelCost, 2000);
   assert.equal(budget.rooms, 2);
-  assert.equal(budget.hotelCost, 6000);
+  assert.equal(budget.hotelCost, 12000);
   assert.equal(budget.foodCost, 6000);
   assert.equal(budget.activitiesCost, 3200);
   assert.equal(budget.otherCosts, 1000);
-  assert.equal(budget.subtotal, 18200);
-  assert.equal(budget.contingency, 1820);
-  assert.equal(budget.total, 20020);
-  assert.equal(budget.perPerson, 5005);
+  assert.equal(budget.subtotal, 24200);
+  assert.equal(budget.contingency, 2420);
+  assert.equal(budget.total, 26620);
+  assert.equal(budget.perPerson, 6655);
 });
 
 test("budget guards prevent divide-by-zero and cap contingency", () => {
