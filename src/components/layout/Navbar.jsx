@@ -25,6 +25,7 @@ function Navbar() {
         <div className="hidden items-center gap-5 text-sm lg:flex">
           <Link to="/" className="transition hover:text-cyan-400">🏠 Home</Link>
           <Link to="/saved" className="transition hover:text-cyan-400">💾 Saved Trips</Link>
+          <Link to="/offline" className="transition hover:text-cyan-400">📦 Offline Packs</Link>
           <Link to="/favorites" className="transition hover:text-cyan-400">❤️ Favorites</Link>
           <Link to="/profile" className="transition hover:text-cyan-400">👤 Profile</Link>
           {user ? (
@@ -45,6 +46,7 @@ function Navbar() {
         <div className="mx-auto mt-4 flex max-w-7xl flex-col gap-2 border-t border-white/10 pt-4 lg:hidden">
           <Link onClick={() => setOpen(false)} to="/" className="rounded-lg px-3 py-3 hover:bg-white/5">🏠 Home</Link>
           <Link onClick={() => setOpen(false)} to="/saved" className="rounded-lg px-3 py-3 hover:bg-white/5">💾 Saved Trips</Link>
+          <Link onClick={() => setOpen(false)} to="/offline" className="rounded-lg px-3 py-3 hover:bg-white/5">📦 Offline Packs</Link>
           <Link onClick={() => setOpen(false)} to="/favorites" className="rounded-lg px-3 py-3 hover:bg-white/5">❤️ Favorites</Link>
           <Link onClick={() => setOpen(false)} to="/profile" className="rounded-lg px-3 py-3 hover:bg-white/5">👤 Profile</Link>
           {user ? (
