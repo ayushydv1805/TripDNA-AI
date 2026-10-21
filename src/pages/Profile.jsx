@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
-import { useAuth } from "../app/AuthContext";
+import { useAuth } from "../app/useAuth";
 import { getFavorites } from "../services/storage/favorites";
 import { getTrips } from "../services/storage/trips";
 
