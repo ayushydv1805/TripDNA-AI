@@ -21,7 +21,7 @@ function isSupportedKey(key) {
     key.startsWith(BUDGET_PREFIX) &&
     key.length > BUDGET_PREFIX.length &&
     key.length <= 520 &&
-    !/[\u0000-\u001f]/.test(key)
+    ![...key].some((character) => { const code = character.charCodeAt(0); return code < 32 || code === 127; })
   );
 }
 
