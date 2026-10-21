@@ -44,6 +44,7 @@ The app is built as a Vite SPA with a feature-oriented React structure. External
 - Editable Itineraries and Expense Tracking
 - Offline Travel Packs
 - Backup and Restore
+- Android and Windows Downloads
 - Vercel Deployment
 - Error Handling
 - Refactoring Principles
@@ -143,6 +144,10 @@ Users can ask trip-specific questions with the selected start and destination pa
 ### 📦 Offline Travel Packs
 
 Save up to eight compact trip packs on the same browser or app WebView. A pack can include the itinerary, route distance/duration, budget settings, recorded expenses and a small snapshot of destination weather and places. The Offline Packs screen opens these saved details without requesting live data and can export a JSON copy for backup. Live conditions and availability are not refreshed offline.
+
+### 🗄️ Portable Backup and Restore
+
+The **Profile → Backup & Restore** screen exports TripDNA's local saved trips, favorites, recent searches, compact route snapshots, itineraries, offline packs and route budget/expense records into one versioned JSON backup. Restores validate file format and supported record counts before changing data, leave unrelated browser storage untouched, and attempt rollback if device storage fills during restoration. A restore only affects TripDNA data on the current device; it does not overwrite Firebase cloud records. Backups can contain travel history and expense descriptions, so keep them private.
 
 ### 🗄️ Portable Backup and Restore
 
@@ -448,9 +453,10 @@ TripDNA-AI/
 | /trip/:id | Trip details screen |
 | /saved | Saved trips |
 | /favorites | Saved places |
-| /profile | Local traveler dashboard |
+| /profile | Traveler dashboard |
 | /offline | Saved offline trip packs |
-| /backup | Export or restore a local backup |
+| /backup | Export or restore TripDNA-local data |
+| /login | Sign in or create a cloud account |
 | * | Custom 404 |
 
 Search URLs use:
@@ -550,7 +556,7 @@ TripDNA supports email/password sign-in and account creation through Firebase Au
 - With Firebase configured, saved routes, recent searches and favorites merge with the user's Firestore backup on sign-in and are synced after changes.
 - Firebase needs the Email/Password provider, the VITE_FIREBASE_* web configuration values, and per-user Firestore rules. Follow [Firebase setup](docs/FIREBASE_SETUP.md).
 
-The cache of full destination results intentionally stays on-device; it is not uploaded as one large Firestore document.
+The cache of full destination results intentionally stays on-device; it is not uploaded as one large Firestore document. Use [Native Release Instructions](docs/NATIVE_RELEASES.md) to move local TripDNA data between devices.
 
 ---
 
@@ -563,6 +569,18 @@ The cache of full destination results intentionally stays on-device; it is not u
 | npm run preview | Preview production build locally |
 | npm run lint | Run ESLint |
 | npm test | Run budget and backup/restore unit tests |
+| npm run cap:sync | Sync web assets into Android |
+| npm run tauri:build | Build the Windows desktop installer |
+
+---
+
+## 📦 Android APK and Windows Installer
+
+Use [Native Release Instructions](docs/NATIVE_RELEASES.md) for the Android APK, Windows setup executable, workflow artifacts, versioned releases, signing limitations and required API configuration. The packaging workflow builds Android through Capacitor and Windows through Tauri. Downloadable binaries are created by GitHub Actions; they are not committed to the source repository.
+
+GitHub Releases: https://github.com/ayushydv1805/TripDNA-AI/releases/latest
+
+The first Android package is a debug-signed sideload APK, not a Google Play-ready release. The Windows installer is unsigned and may trigger SmartScreen warnings. AI requests in native builds use the hosted API at https://trip-dna-ai.vercel.app and require that API deployment and server-side OPENROUTER_API_KEY to be available.
 
 ---
 
@@ -700,6 +718,7 @@ Key rules:
 
 ### Product
 
+- [x] Package the shared frontend for Android APK and Windows desktop builds.
 - [ ] Add Google sign-in and email verification.
 - [ ] Shareable trip URLs.
 - [ ] Collaborative trip planning.
