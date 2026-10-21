@@ -47,6 +47,16 @@ function Profile() {
               <h2 className="mt-3 text-xl font-bold">Favorites</h2>
               <p className="mt-1 text-slate-400">{favorites.length} saved place{favorites.length === 1 ? "" : "s"}</p>
             </Link>
+            <Link to="/offline" className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:border-emerald-300/30">
+              <p className="text-3xl">📦</p>
+              <h2 className="mt-3 text-xl font-bold">Offline Packs</h2>
+              <p className="mt-1 text-slate-400">Open saved trip snapshots without live data</p>
+            </Link>
+            <Link to="/backup" className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:-translate-y-1 hover:border-violet-300/30">
+              <p className="text-3xl">🗄️</p>
+              <h2 className="mt-3 text-xl font-bold">Backup & Restore</h2>
+              <p className="mt-1 text-slate-400">Download a file or move data to another device</p>
+            </Link>
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             {user ? (
