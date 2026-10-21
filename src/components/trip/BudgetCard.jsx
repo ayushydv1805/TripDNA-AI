@@ -22,7 +22,7 @@ function readSavedState(key) {
   }
 }
 
-function BudgetCard({ budget, distance, from = "", to = "" }) {
+function BudgetCard({ distance, from = "", to = "" }) {
   const storageKey = budgetStorageKey(from, to);
   const [initial] = useState(() => readSavedState(storageKey));
   const [settings, setSettings] = useState(initial.settings);
