@@ -553,6 +553,7 @@ The cache of full destination results intentionally stays on-device; it is not u
 | npm run build | Build production frontend |
 | npm run preview | Preview production build locally |
 | npm run lint | Run ESLint |
+| npm test | Run travel budget unit tests |
 
 ---
 
