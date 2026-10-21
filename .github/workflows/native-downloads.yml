@@ -65,6 +65,9 @@ jobs:
       - name: Sync web assets into Android
         run: npx cap sync android
 
+      - name: Configure Maven Central fallback repositories
+        run: node scripts/configure-android-maven.mjs
+
       - name: Build installable debug-signed APK
         run: |
           chmod +x android/gradlew
