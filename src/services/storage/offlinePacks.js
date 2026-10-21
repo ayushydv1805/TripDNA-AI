@@ -28,14 +28,19 @@ function readPacks() {
 
 function compactPlaceList(value) {
   if (!Array.isArray(value)) return [];
-  return value.slice(0, 6).map((place) => ({
-    name: String(place?.name || place?.properties?.name || "Place").slice(0, 120),
-    address: String(place?.address || place?.formatted || place?.properties?.formatted || "").slice(0, 220),
-    categories: Array.isArray(place?.categories) ? place.categories.slice(0, 5) : [],
-    lat: Number.isFinite(Number(place?.lat ?? place?.properties?.lat)) ? Number(place?.lat ?? place?.properties?.lat) : null,
-    lon: Number.isFinite(Number(place?.lon ?? place?.properties?.lon)) ? Number(place?.lon ?? place?.properties?.lon) : null,
-    url: String(place?.url || "").slice(0, 500),
-  }));
+  return value.slice(0, 6).map((place) => {
+    const properties = place?.properties || place || {};
+    const lat = properties.lat ?? place?.lat;
+    const lon = properties.lon ?? place?.lon;
+    return {
+      name: String(properties.name || "Place").slice(0, 120),
+      address: String(properties.address_line1 || properties.formatted || place?.address || place?.formatted || "").slice(0, 220),
+      categories: Array.isArray(properties.categories) ? properties.categories.slice(0, 5) : Array.isArray(place?.categories) ? place.categories.slice(0, 5) : [],
+      lat: Number.isFinite(Number(lat)) ? Number(lat) : null,
+      lon: Number.isFinite(Number(lon)) ? Number(lon) : null,
+      url: String(properties.website || place?.url || "").slice(0, 500),
+    };
+  });
 }
 
 function compactTrip(trip) {
