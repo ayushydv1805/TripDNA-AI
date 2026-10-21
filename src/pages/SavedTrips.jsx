@@ -1,19 +1,16 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "../app/AuthContext";
+import { useState } from "react";
+import { useAuth } from "../app/useAuth";
 import Navbar from "../components/layout/Navbar";
 import { deleteTrip, getTrips } from "../services/storage/trips";
 
 function SavedTrips() {
-  const [trips, setTrips] = useState([]);
-  const { cloudStatus } = useAuth();
-
-  useEffect(() => {
-    setTrips(getTrips());
-  }, [cloudStatus]);
+  const [, setVersion] = useState(0);
+  useAuth();
+  const trips = getTrips();
 
   function handleDelete(index) {
     deleteTrip(index);
-    setTrips(getTrips());
+    setVersion((version) => version + 1);
   }
 
   return (
