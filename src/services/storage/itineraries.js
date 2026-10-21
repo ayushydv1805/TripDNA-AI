@@ -2,7 +2,7 @@ const STORAGE_KEY = "tripDnaItineraries";
 const MAX_SAVED_PLANS = 12;
 
 function routeKey(from, to) {
-  return [String(from || "").trim().toLowerCase(), String(to || "").trim().toLowerCase()].join("|");
+  return [String(from || "").trim().toLowerCase().replace(/\s+/g, " "), String(to || "").trim().toLowerCase().replace(/\s+/g, " ")].join("|");
 }
 
 function readPlans() {
