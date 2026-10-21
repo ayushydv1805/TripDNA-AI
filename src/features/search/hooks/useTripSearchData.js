@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { loadTripData } from "../services/loadTripData";
+import { getCachedTrip } from "../../../services/storage/tripCache";
 
 const EMPTY_TRIP = {
   fromLocation: null,
@@ -23,7 +24,9 @@ const EMPTY_TRIP = {
 export function useTripSearchData(from, to) {
   const [trip, setTrip] = useState(EMPTY_TRIP);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -31,41 +34,54 @@ export function useTripSearchData(from, to) {
     async function fetchTrip() {
       if (!from || !to) {
         setTrip(EMPTY_TRIP);
+        setLoading(false);
+        setRefreshing(false);
         setError("Please provide both a starting point and a destination.");
+        setNotice("");
         return;
       }
 
-      setLoading(true);
+      const cachedTrip = getCachedTrip(from, to);
+      if (cachedTrip) {
+        setTrip(cachedTrip);
+        setLoading(false);
+        setRefreshing(true);
+        setNotice("Loaded your saved trip snapshot. Checking for updated travel information…");
+      } else {
+        setTrip(EMPTY_TRIP);
+        setLoading(true);
+        setRefreshing(false);
+        setNotice("");
+      }
       setError("");
-      setTrip(EMPTY_TRIP);
 
       try {
         const result = await loadTripData(from, to);
-        if (!cancelled) setTrip(result);
+        if (!cancelled) {
+          setTrip(result);
+          setError("");
+          setNotice("");
+        }
       } catch (err) {
         if (!cancelled) {
           console.error("Trip search error:", err);
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Failed to load trip data. Please try again."
-          );
+          if (cachedTrip) {
+            setNotice("Showing your saved results because live data could not be refreshed. Your history remains available on this device.");
+          } else {
+            setError(err instanceof Error ? err.message : "Failed to load trip data. Please try again.");
+          }
         }
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+          setRefreshing(false);
+        }
       }
     }
 
-    fetchTrip();
-
-    return () => {
-      cancelled = true;
-    };
+    void fetchTrip();
+    return () => { cancelled = true; };
   }, [from, to]);
 
-  return {
-    ...trip,
-    loading,
-    error,
-  };
+  return { ...trip, loading, refreshing, error, notice };
 }
