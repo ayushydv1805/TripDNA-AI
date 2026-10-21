@@ -152,6 +152,8 @@ jobs:
 
       - name: Publish downloads
         uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.event_name == 'release' && github.event.release.tag_name || 'native-latest' }}
           name: ${{ github.event_name == 'release' && github.event.release.name || 'TripDNA AI — Native Preview' }}
