@@ -9,7 +9,7 @@ import {
 } from "firebase/auth";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { auth, firebaseConfigured } from "../lib/firebase";
-import { useAuth } from "../app/AuthContext";
+import { useAuth } from "../app/useAuth";
 
 function friendlyAuthError(code) {
   const messages = {
