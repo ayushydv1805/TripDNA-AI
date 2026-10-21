@@ -3,7 +3,7 @@ function normalizeOrigin(value) {
   try {
     const input = value.trim();
     const url = new URL(/^[a-z][a-z\d+.-]*:\/\//i.test(input) ? input : "https://" + input);
-    return url.origin;
+    return url.origin === "null" ? url.protocol + "//" + url.host : url.origin;
   } catch {
     return null;
   }
