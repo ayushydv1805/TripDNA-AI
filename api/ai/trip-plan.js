@@ -1,4 +1,7 @@
+import { isJsonRequest, secureApiRequest } from "../../server/apiSecurity.js";
+
 const MODEL = "inclusionai/ling-3.0-flash:free";
+const UPSTREAM_TIMEOUT_MS = 25_000;
 
 function sendError(res, status, error) {
   return res.status(status).json({ error });
@@ -42,6 +45,7 @@ async function requestPlan(apiKey, prompt) {
         : "https://trip-dna-ai.vercel.app",
       "X-Title": "TripDNA AI",
     },
+    signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     body: JSON.stringify({
       model: MODEL,
       messages: [
@@ -60,7 +64,7 @@ async function requestPlan(apiKey, prompt) {
   catch { throw new Error("The AI provider returned an unreadable response."); }
 
   if (!response.ok) {
-    console.error("OpenRouter trip-plan error:", data);
+    console.error("OpenRouter trip-plan request failed with status:", response.status);
     throw new Error("The AI service could not generate the itinerary. Please try again.");
   }
 
@@ -74,29 +78,50 @@ async function requestPlan(apiKey, prompt) {
 }
 
 export default async function handler(req, res) {
+  if (!secureApiRequest(req, res)) return;
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return sendError(res, 405, "Method not allowed");
   }
+  if (!isJsonRequest(req)) {
+    return sendError(res, 415, "Send this request as application/json.");
+  }
+
+  const body = req.body;
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return sendError(res, 400, "A JSON object is required.");
+  }
+  let bodySize;
+  try {
+    bodySize = JSON.stringify(body).length;
+  } catch {
+    return sendError(res, 400, "The request body could not be read.");
+  }
+  if (bodySize > 100_000) {
+    return sendError(res, 413, "The itinerary request is too large.");
+  }
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return sendError(res, 500, "OpenRouter API key is not configured on the server.");
-
-  const body = req.body || {};
-  const from = String(body.from || "").trim().slice(0, 120);
-  const to = String(body.to || "").trim().slice(0, 120);
+  const from = typeof body.from === "string" ? body.from.trim().slice(0, 120) : "";
+  const to = typeof body.to === "string" ? body.to.trim().slice(0, 120) : "";
   const days = safeNumber(body.days, 3, 1, 30);
   const budget = safeNumber(body.budget, 0, 0, 100000000);
   const travelers = safeNumber(body.travelers, 1, 1, 30);
   const tripTypeRaw = String(body.tripType || "Adventure").trim();
   const allowedTripTypes = ["Adventure", "Family", "Solo", "Couple", "Relaxation", "Culture", "Food", "Nature", "Business", "Road trip"];
   const tripType = allowedTripTypes.includes(tripTypeRaw) ? tripTypeRaw : "Adventure";
-  const interests = String(body.interests || "").trim().slice(0, 500);
-  const travelStyle = String(body.travelStyle || "Balanced").slice(0, 40);
-  const foodPreference = String(body.foodPreference || "No preference").slice(0, 80);
-  const startDate = String(body.startDate || "").trim();
-  const endDate = String(body.endDate || "").trim();
-  const regenerateDay = Number(body.regenerateDay) || 0;
+  const interests = typeof body.interests === "string" ? body.interests.trim().slice(0, 500) : "";
+  const allowedTravelStyles = ["Relaxed", "Balanced", "Packed"];
+  const requestedTravelStyle = typeof body.travelStyle === "string" ? body.travelStyle.trim() : "";
+  const travelStyle = allowedTravelStyles.includes(requestedTravelStyle) ? requestedTravelStyle : "Balanced";
+  const allowedFoodPreferences = ["No preference", "Vegetarian", "Vegan", "Jain", "Halal", "Local food", "Budget food"];
+  const requestedFoodPreference = typeof body.foodPreference === "string" ? body.foodPreference.trim() : "";
+  const foodPreference = allowedFoodPreferences.includes(requestedFoodPreference) ? requestedFoodPreference : "No preference";
+  const startDate = typeof body.startDate === "string" ? body.startDate.trim() : "";
+  const endDate = typeof body.endDate === "string" ? body.endDate.trim() : "";
+  const regenerateDay = body.regenerateDay === undefined ? 0 : Number(body.regenerateDay);
 
   if (!from || !to) return sendError(res, 400, "Starting location and destination are required.");
   if (body.days !== undefined && (!Number.isInteger(Number(body.days)) || Number(body.days) < 1 || Number(body.days) > 30)) {
@@ -108,6 +133,12 @@ export default async function handler(req, res) {
   if (startDate && !validISODate(startDate)) return sendError(res, 400, "Start date must be a valid date.");
   if (endDate && !validISODate(endDate)) return sendError(res, 400, "End date must be a valid date.");
   if (startDate && endDate && endDate < startDate) return sendError(res, 400, "End date cannot be before the start date.");
+  if (body.regenerateDay !== undefined && (!Number.isInteger(regenerateDay) || regenerateDay < 0 || regenerateDay > days)) {
+    return sendError(res, 400, "The day to regenerate is outside this trip.");
+  }
+  if (regenerateDay && (!body.existingPlan || typeof body.existingPlan !== "object" || Array.isArray(body.existingPlan) || !Array.isArray(body.existingPlan.days))) {
+    return sendError(res, 400, "The existing itinerary is required to regenerate a day.");
+  }
   if (regenerateDay && (!Number.isInteger(regenerateDay) || regenerateDay < 1 || regenerateDay > days)) {
     return sendError(res, 400, "The day to regenerate is outside this trip.");
   }
