@@ -6,6 +6,8 @@ const UPSTREAM_TIMEOUT_MS = 20_000;
 export default async function handler(req, res) {
   if (!secureApiRequest(req, res)) return;
 
+  if (req.method === "OPTIONS") return res.status(204).end();
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Method not allowed" });
