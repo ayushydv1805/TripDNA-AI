@@ -1,7 +1,6 @@
 import {
   createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
@@ -10,13 +9,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, firebaseConfigured } from "../lib/firebase";
 import { restoreUserData, syncLocalDataToCloud } from "../services/storage/cloudSync";
 
-const AuthContext = createContext({
-  user: null,
-  loading: false,
-  cloudStatus: "local",
-  firebaseConfigured: false,
-  logout: async () => {},
-});
+import AuthContext from "./auth-context";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -76,6 +69,3 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
