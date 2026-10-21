@@ -9,6 +9,7 @@ import {
   itineraryToText,
   saveItinerary,
 } from "../../services/storage/itineraries";
+import { saveOfflinePack } from "../../services/storage/offlinePacks";
 
 function localISODate(offsetDays = 0) {
   const date = new Date();
@@ -38,17 +39,18 @@ function uniqueActivityId() {
 }
 
 function AITripPlanner({ from, to }) {
-  const [startDate, setStartDate] = useState(() => localISODate(1));
-  const [endDate, setEndDate] = useState(() => localISODate(3));
-  const [budget, setBudget] = useState(15000);
-  const [travelers, setTravelers] = useState(2);
-  const [tripType, setTripType] = useState("Adventure");
-  const [travelStyle, setTravelStyle] = useState("Balanced");
-  const [foodPreference, setFoodPreference] = useState("No preference");
+  const [initialPlan] = useState(() => getSavedItinerary(from, to));
+  const [startDate, setStartDate] = useState(() => initialPlan?.startDate || localISODate(1));
+  const [endDate, setEndDate] = useState(() => initialPlan?.endDate || localISODate(3));
+  const [budget, setBudget] = useState(() => initialPlan?.budget ?? 15000);
+  const [travelers, setTravelers] = useState(() => initialPlan?.travelers || 2);
+  const [tripType, setTripType] = useState(() => initialPlan?.tripType || "Adventure");
+  const [travelStyle, setTravelStyle] = useState(() => initialPlan?.travelStyle || "Balanced");
+  const [foodPreference, setFoodPreference] = useState(() => initialPlan?.foodPreference || "No preference");
   const [interests, setInterests] = useState("");
   const [loading, setLoading] = useState(false);
   const [regeneratingDay, setRegeneratingDay] = useState(0);
-  const [tripPlan, setTripPlan] = useState(() => getSavedItinerary(from, to));
+  const [tripPlan, setTripPlan] = useState(initialPlan);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [copied, setCopied] = useState(false);
@@ -171,6 +173,22 @@ function AITripPlanner({ from, to }) {
       ...day,
       activities: day.activities.filter((activity) => activity.id !== activityId),
     }));
+  }
+
+  function handleSaveOfflinePack() {
+    if (!tripPlan) return;
+    const itinerarySaved = saveItinerary(from, to, tripPlan);
+    if (!itinerarySaved) {
+      setError("Could not save the itinerary before creating the offline pack.");
+      return;
+    }
+    const result = saveOfflinePack(from, to);
+    if (!result.ok) {
+      setError(result.error || "Could not save this offline pack.");
+      return;
+    }
+    setError("");
+    setNotice("Offline pack saved. Open Offline Trips from the navigation menu to view it without live API calls.");
   }
 
   async function handleRegenerateDay(dayNumber) {
@@ -405,6 +423,7 @@ function AITripPlanner({ from, to }) {
             <button type="button" onClick={copyItinerary} className="rounded-xl bg-amber-500 px-4 py-3 font-bold text-slate-950 hover:bg-amber-400">{copied ? "✅ Copied" : "📋 Copy"}</button>
             <button type="button" onClick={shareItinerary} className="rounded-xl bg-violet-600 px-4 py-3 font-bold hover:bg-violet-500">📤 Share</button>
             <button type="button" onClick={() => { const ok = saveItinerary(from, to, tripPlan); setNotice(ok ? "Itinerary saved on this device." : "Could not save the itinerary on this device."); }} className="rounded-xl border border-white/15 px-4 py-3 font-bold hover:border-cyan-300/40 hover:text-cyan-200">💾 Save now</button>
+            <button type="button" onClick={handleSaveOfflinePack} className="rounded-xl bg-cyan-300 px-4 py-3 font-extrabold text-slate-950 hover:bg-cyan-200">📦 Save offline pack</button>
           </div>
           <p className="text-xs leading-5 text-slate-500">All edits are stored locally in this browser or APK WebView. AI-generated places, costs and timings are suggestions; verify details before booking or travel.</p>
         </div>
