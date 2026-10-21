@@ -130,10 +130,19 @@ jobs:
 
   publish-release:
     name: Attach installers to GitHub Release
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || github.event_name == 'push'
     needs: [android, windows]
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout release source
+        uses: actions/checkout@v4
+
+      - name: Update rolling native preview tag
+        if: github.event_name == 'push'
+        run: |
+          git tag -f native-latest "$GITHUB_SHA"
+          git push origin refs/tags/native-latest --force
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
