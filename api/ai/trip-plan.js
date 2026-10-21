@@ -163,7 +163,7 @@ export default async function handler(req, res) {
         date: String(day.date || "").slice(0, 10),
         title: String(day.title || "Updated day plan").slice(0, 160),
         activities: day.activities.slice(0, 12).map((activity, index) => ({
-          id: String(activity.id || "day-" + regenerateDay + "-activity-" + (index + 1)).slice(0, 80),
+          id: "day-" + regenerateDay + "-activity-" + (index + 1),
           time: String(activity.time || "").slice(0, 20),
           title: String(activity.title || "Activity").slice(0, 160),
           location: String(activity.location || to).slice(0, 160),
@@ -187,7 +187,7 @@ export default async function handler(req, res) {
         date: String(day.date || "").slice(0, 10),
         title: String(day.title || "Day " + (index + 1)).slice(0, 160),
         activities: day.activities.slice(0, 12).map((activity, activityIndex) => ({
-          id: String(activity.id || "day-" + (index + 1) + "-activity-" + (activityIndex + 1)).slice(0, 80),
+          id: "day-" + (index + 1) + "-activity-" + (activityIndex + 1),
           time: String(activity.time || "").slice(0, 20),
           title: String(activity.title || "Activity").slice(0, 160),
           location: String(activity.location || to).slice(0, 160),
