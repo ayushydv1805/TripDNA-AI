@@ -52,7 +52,6 @@ async function requestPlan(apiKey, prompt) {
         { role: "user", content: prompt },
       ],
       temperature: 0.4,
-      response_format: { type: "json_object" },
     }),
   });
 
