@@ -27,6 +27,7 @@ function Navbar() {
           <Link to="/saved" className="transition hover:text-cyan-400">💾 Saved Trips</Link>
           <Link to="/offline" className="transition hover:text-cyan-400">📦 Offline Packs</Link>
           <Link to="/favorites" className="transition hover:text-cyan-400">❤️ Favorites</Link>
+          <Link to="/backup" className="transition hover:text-cyan-400">🗄️ Backup</Link>
           <Link to="/profile" className="transition hover:text-cyan-400">👤 Profile</Link>
           {user ? (
             <>
@@ -48,6 +49,7 @@ function Navbar() {
           <Link onClick={() => setOpen(false)} to="/saved" className="rounded-lg px-3 py-3 hover:bg-white/5">💾 Saved Trips</Link>
           <Link onClick={() => setOpen(false)} to="/offline" className="rounded-lg px-3 py-3 hover:bg-white/5">📦 Offline Packs</Link>
           <Link onClick={() => setOpen(false)} to="/favorites" className="rounded-lg px-3 py-3 hover:bg-white/5">❤️ Favorites</Link>
+          <Link onClick={() => setOpen(false)} to="/backup" className="rounded-lg px-3 py-3 hover:bg-white/5">🗄️ Backup & Restore</Link>
           <Link onClick={() => setOpen(false)} to="/profile" className="rounded-lg px-3 py-3 hover:bg-white/5">👤 Profile</Link>
           {user ? (
             <button type="button" onClick={handleLogout} className="rounded-lg px-3 py-3 text-left font-semibold text-cyan-300 hover:bg-white/5">Sign out ({user.displayName || user.email})</button>
