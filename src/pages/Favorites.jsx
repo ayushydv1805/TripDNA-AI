@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useAuth } from "../app/useAuth";
 import { Link } from "react-router-dom";
 import Navbar from "../components/layout/Navbar";
 import { getFavorites, removeFavorite } from "../services/storage/favorites";
 
 function Favorites() {
-  const [favorites, setFavorites] = useState([]);
-
-  useEffect(() => {
-    setFavorites(getFavorites());
-  }, []);
+  const [, setVersion] = useState(0);
+  useAuth();
+  const favorites = getFavorites();
 
   function handleRemove(item) {
     removeFavorite(item);
-    setFavorites(getFavorites());
+    setVersion((version) => version + 1);
   }
 
   return (

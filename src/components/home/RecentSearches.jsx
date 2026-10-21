@@ -1,13 +1,10 @@
-import { useEffect, useState } from "react";
+import { useAuth } from "../../app/useAuth";
 import { Link } from "react-router-dom";
 import { getRecentSearches } from "../../features/search/utils/recentSearches";
 
 function RecentSearches() {
-  const [searches, setSearches] = useState([]);
-
-  useEffect(() => {
-    setSearches(getRecentSearches());
-  }, []);
+  useAuth();
+  const searches = getRecentSearches();
 
   if (searches.length === 0) return null;
 
