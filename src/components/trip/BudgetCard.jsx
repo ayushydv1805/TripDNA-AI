@@ -7,7 +7,7 @@ import {
 const CURRENCY = (value) => "₹" + Math.round(Number(value) || 0).toLocaleString("en-IN");
 
 function budgetStorageKey(from, to) {
-  return "tripDnaBudget:" + [String(from || "").trim().toLowerCase(), String(to || "").trim().toLowerCase()].join("|");
+  return "tripDnaBudget:" + [String(from || "").trim().toLowerCase().replace(/\s+/g, " "), String(to || "").trim().toLowerCase().replace(/\s+/g, " ")].join("|");
 }
 
 function readSavedState(key) {
