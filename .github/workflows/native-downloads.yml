@@ -1,0 +1,151 @@
+name: Build Android and Windows downloads
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "capacitor.config.json"
+      - "src-tauri/**"
+      - "api/ai/**"
+      - "server/apiSecurity.js"
+      - "src/services/ai/**"
+      - ".github/workflows/native-downloads.yml"
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+env:
+  VITE_API_BASE_URL: https://trip-dna-ai.vercel.app
+  VITE_GEOAPIFY_API_KEY: \${{ secrets.VITE_GEOAPIFY_API_KEY }}
+  VITE_OPENWEATHER_API_KEY: \${{ secrets.VITE_OPENWEATHER_API_KEY }}
+  VITE_UNSPLASH_API_KEY: \${{ secrets.VITE_UNSPLASH_API_KEY }}
+  VITE_YOUTUBE_API_KEY: \${{ secrets.VITE_YOUTUBE_API_KEY }}
+  VITE_GEMINI_API_KEY: \${{ secrets.VITE_GEMINI_API_KEY }}
+  VITE_FIREBASE_API_KEY: \${{ secrets.VITE_FIREBASE_API_KEY }}
+  VITE_FIREBASE_AUTH_DOMAIN: \${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+  VITE_FIREBASE_PROJECT_ID: \${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+  VITE_FIREBASE_STORAGE_BUCKET: \${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+  VITE_FIREBASE_MESSAGING_SENDER_ID: \${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+  VITE_FIREBASE_APP_ID: \${{ secrets.VITE_FIREBASE_APP_ID }}
+
+jobs:
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web assets for Android
+        run: npm run build
+
+      - name: Create Capacitor Android project
+        run: npx cap add android
+
+      - name: Sync web assets into Android
+        run: npx cap sync android
+
+      - name: Build installable debug-signed APK
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew --no-daemon assembleDebug
+
+      - name: Prepare APK
+        run: |
+          mkdir -p release-assets
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-assets/TripDNA-Android.apk
+
+      - name: Upload APK build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TripDNA-Android-APK
+          path: release-assets/TripDNA-Android.apk
+          if-no-files-found: error
+          retention-days: 30
+
+  windows:
+    name: Build Windows installers
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Setup stable Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate app icons
+        run: npx tauri icon public/favicon.svg
+
+      - name: Build Tauri installers
+        run: npm run tauri:build
+
+      - name: Collect Windows installers
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release-assets | Out-Null
+          $setup = Get-ChildItem "src-tauri/target/release/bundle/nsis/*-setup.exe" | Select-Object -First 1
+          if (-not $setup) { throw "Tauri did not produce an NSIS setup executable." }
+          Copy-Item $setup.FullName "release-assets/TripDNA-Windows-Setup.exe"
+          $msi = Get-ChildItem "src-tauri/target/release/bundle/msi/*.msi" | Select-Object -First 1
+          if ($msi) { Copy-Item $msi.FullName "release-assets/TripDNA-Windows.msi" }
+
+      - name: Upload Windows installer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: TripDNA-Windows-Installers
+          path: release-assets/*
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-release:
+    name: Attach installers to GitHub Release
+    if: github.event_name == 'release'
+    needs: [android, windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: TripDNA-*
+          path: release-assets
+          merge-multiple: true
+
+      - name: Publish downloads
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: \${{ github.event.release.tag_name }}
+          files: release-assets/*
+          overwrite_files: true
+          fail_on_unmatched_files: true
+          generate_release_notes: true
