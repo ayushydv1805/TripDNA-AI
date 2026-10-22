@@ -12,6 +12,12 @@ The Android APK is signed with the standard debug certificate so it can be insta
 
 The Windows installer is currently unsigned. Windows may show SmartScreen/unknown-publisher warnings. A public production release should be signed with a trusted code-signing certificate.
 
+### Login modes
+
+Firebase email/password login requires the `VITE_FIREBASE_*` web-app configuration values at build time. The current repository's release environments may not have these values set. When Firebase is not configured, the app offers **local profile mode** instead: create a profile on that PC and use its email/password on that same installation. The password is stored as a salted PBKDF2-SHA-256 hash, not as plain text. A local profile is not a Firebase account, does not sync to another device, and cannot be recovered if its password is forgotten. Local trip data can still be exported from Backup & Restore.
+
+To enable cloud login in a release, configure the Firebase web-app values as GitHub Actions secrets named `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`, and `VITE_FIREBASE_APP_ID`, and make sure Email/Password is enabled in Firebase Authentication.
+
 ## Build via GitHub Actions
 
 1. Merge the native packaging changes to main.

@@ -33,7 +33,7 @@ function Profile() {
               <p className="text-sm font-bold uppercase tracking-[0.25em] text-cyan-400">{user ? "TripDNA account" : "Local profile"}</p>
               <h1 className="mt-2 break-words text-3xl font-black md:text-4xl">{user ? "Welcome, " + (user.displayName || "traveler") : "Traveler Dashboard"}</h1>
               {user ? <p className="mt-2 break-all text-slate-300">{user.email}</p> : <p className="mt-2 text-slate-300">Your TripDNA activity is saved on this device. Sign in to enable cloud backup.</p>}
-              {user && <p className="mt-2 text-sm text-slate-400">{cloudStatus === "synced" ? "☁️ Account backup connected. Trips, recent searches and favorites sync to your account." : cloudStatus === "syncing" ? "☁️ Syncing your saved travel data…" : "💾 Your local data is safe. Cloud backup may need Firebase configuration or network access."}</p>}
+              {user && <p className="mt-2 text-sm text-slate-400">{user.isLocalAccount ? "💻 Local profile: this login is saved on this PC and does not sync to other devices. Use Backup & Restore to move trip data." : cloudStatus === "synced" ? "☁️ Account backup connected. Trips, recent searches and favorites sync to your account." : cloudStatus === "syncing" ? "☁️ Syncing your saved travel data…" : "💾 You are signed in. Local data is saved; cloud backup may need Firebase configuration, network access or Firestore rules."}</p>}
             </div>
           </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2">

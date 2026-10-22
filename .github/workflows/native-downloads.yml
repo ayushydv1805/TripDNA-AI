@@ -10,7 +10,10 @@ on:
       - "src-tauri/**"
       - "api/ai/**"
       - "server/apiSecurity.js"
-      - "src/services/ai/**"
+      - "src/**"
+      - "tests/**"
+      - "scripts/**"
+      - "public/tripdna-app-icon.svg"
       - ".github/workflows/native-downloads.yml"
   workflow_dispatch:
   release:
