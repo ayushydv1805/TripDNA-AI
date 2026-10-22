@@ -20,7 +20,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => getLocalSession());
   const [loading, setLoading] = useState(Boolean(auth));
   const [cloudStatus, setCloudStatus] = useState(
-    firebaseConfigured ? "idle" : getLocalSession() ? "local" : "local"
+    firebaseConfigured ? "idle" : "local"
   );
 
   useEffect(() => {
