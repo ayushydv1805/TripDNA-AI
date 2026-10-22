@@ -1,6 +1,10 @@
 # TripDNA AI: Firebase login and cloud backup
 
-TripDNA can be used without an account. Saved trips, recent searches, favorites and recent full trip-result snapshots are stored in the browser/WebView so they remain after the app is closed. An email/password account adds cloud backup for saved trips, recent searches and favorites.
+TripDNA can be used without an account. Saved trips, recent searches, favorites and recent full trip-result snapshots are stored in the browser/WebView so they remain after the app is closed. A Firebase email/password account adds cloud backup for saved trips, recent searches and favorites. If a packaged build has no Firebase configuration, it offers a local profile instead so login still works on that device.
+
+## Local profile fallback
+
+When Firebase is not configured, choose **Create local profile** on the login screen. It saves the profile on this PC and signs you in to the local app. Passwords are stored as salted PBKDF2-SHA-256 hashes. Local profiles are not cloud accounts, do not sync between devices, and cannot be recovered if the password is forgotten. Use **Profile → Backup & Restore** for trip data portability. To use Firebase cloud accounts, complete the setup below and rebuild the app with the Firebase web configuration.
 
 ## One-time Firebase setup
 
