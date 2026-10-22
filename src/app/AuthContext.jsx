@@ -24,12 +24,7 @@ export function AuthProvider({ children }) {
   );
 
   useEffect(() => {
-    if (!auth) {
-      setUser(getLocalSession());
-      setCloudStatus("local");
-      setLoading(false);
-      return undefined;
-    }
+    if (!auth) return undefined;
 
     let active = true;
     const unsubscribe = onAuthStateChanged(
